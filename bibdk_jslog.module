@@ -66,7 +66,7 @@ function bibdk_jslog_log() {
   // @TODO use flood_register_event to prevent database from exploding;  
   $params = bibdk_jslog_sanitize_post();
   // log with watchdog
-  if (!empty($params)) {
+  if (!empty($params) && count($params == 5)) {
     if (bibdk_jslog_flood_check()) {
       call_user_func_array('watchdog', $params);
     }
@@ -103,11 +103,13 @@ function bibdk_jslog_sanitize_post() {
     'severity' => 'is_numeric',
     'link' => 'is_string',
   );
-  $_POST['variables'] = array();
+
   $params = array();
   // get post variables
   foreach ($arguments as $key => $func) {
-    $params[] = (!empty($_POST[$key]) && $func($_POST[$key])) ? $_POST[$key] : NULL;
+    if (isset($_POST[$key]) && $func($_POST[$key])) {
+      $params[] = $_POST[$key];
+    }
   }
 
   return $params;
