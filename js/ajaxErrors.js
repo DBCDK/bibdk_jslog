@@ -40,7 +40,7 @@ Drupal.watchdog = function(type, message, variables, severity, link) {
             data['variables[' + i +']'] = variables[i];
         }
     }
-
+ 
     jQuery.post(Drupal.settings.basePath + 'jslog', data);
 };
 

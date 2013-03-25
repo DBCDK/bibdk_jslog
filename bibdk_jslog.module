@@ -55,7 +55,6 @@ function bibdk_jslog_admin_form() {
 function bibdk_jslog_admin_form_submit($form, $form_state) {
   variable_set('jslog_enable', $form_state['values']['jslog_enable']);
   variable_set('jslog_flood', $form_state['values']['jslog_flood']);
-  //dpm(func_get_args());
 }
 
 /** \brief logging function (page callback)
@@ -65,14 +64,15 @@ function bibdk_jslog_admin_form_submit($form, $form_state) {
 function bibdk_jslog_log() {
   // @TODO use flood_register_event to prevent database from exploding;  
   $params = bibdk_jslog_sanitize_post();
-  // log with watchdog
-  if (!empty($params) && count($params == 5)) {
+  if (!empty($params)) {
     if (bibdk_jslog_flood_check()) {
-      call_user_func_array('watchdog', $params);
+      if (count($params == 5)) {
+        call_user_func_array('watchdog', $params);
+      }
     }
   }
   // exit here
-  exit;
+  return;
 }
 
 /**
@@ -80,6 +80,7 @@ function bibdk_jslog_log() {
  * @return boolean 
  */
 function bibdk_jslog_flood_check() {
+  flood_clear_event('log ajax error');
   //clear flood while developing
   $threshold = variable_get('jslog_flood');
   if (flood_is_allowed('log ajax error', $threshold, 86400)) {
@@ -105,12 +106,8 @@ function bibdk_jslog_sanitize_post() {
   );
 
   $params = array();
-  // get post variables
   foreach ($arguments as $key => $func) {
-    if (isset($_POST[$key]) && $func($_POST[$key])) {
-      $params[] = $_POST[$key];
-    }
+    $params[] = (!empty($_POST[$key]) && $func($_POST[$key])) ? $_POST[$key] : NULL;
   }
-
   return $params;
 }
