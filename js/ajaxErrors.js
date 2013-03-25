@@ -41,7 +41,13 @@ Drupal.watchdog = function(type, message, variables, severity, link) {
         }
     }
  
+ // Some basic flood control to prevent drupal from bootstrapping if
+ // not needed 
+  if (Drupal.settings.jslog_flood > 0) {
     jQuery.post(Drupal.settings.basePath + 'jslog', data);
+  }
+
+  Drupal.settings.jslog_flood--;    
 };
 
 // @see watchdog_severity_levels();

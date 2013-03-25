@@ -66,7 +66,8 @@ function bibdk_jslog_log() {
   $params = bibdk_jslog_sanitize_post();
   if (!empty($params)) {
     if (bibdk_jslog_flood_check()) {
-      if (count($params == 5)) {
+      // at least two first parameters ('type','message') MUST be set for watchdog
+      if (isset($params[0]) && isset($params[1])) {
         call_user_func_array('watchdog', $params);
       }
     }
@@ -75,13 +76,28 @@ function bibdk_jslog_log() {
   return;
 }
 
+function bibdk_jslog_preprocess_page(&$variables) {
+  bibdk_jslog_add_js();
+}
+
+/**
+ * add a variable to drupal.setting to avoid drupal bootstrap if not needed
+ * @staticvar type $done 
+ */
+function bibdk_jslog_add_js() {
+  // only add once pr. roundtrip
+  static $done;
+  if (!isset($done)) {
+    drupal_add_js(array('jslog_flood' => variable_get('jslog_flood', 1)), 'setting');
+    $done = 1;
+  }
+}
+
 /**
  * flood control. only allow {$threshold} ajaxerrors pr.user/day
  * @return boolean 
  */
 function bibdk_jslog_flood_check() {
-  flood_clear_event('log ajax error');
-  //clear flood while developing
   $threshold = variable_get('jslog_flood');
   if (flood_is_allowed('log ajax error', $threshold, 86400)) {
     flood_register_event('log ajax error', 86400);
