@@ -61,12 +61,10 @@ function bibdk_jslog_admin_form_submit($form, $form_state) {
  * 
  * log to watchdog with parameters given in $_POST
  */
-function bibdk_jslog_log() {
-  // @TODO use flood_register_event to prevent database from exploding;  
+function bibdk_jslog_log() { 
   $params = bibdk_jslog_sanitize_post();
   if (!empty($params)) {
     if (bibdk_jslog_flood_check()) {
-      // at least two first parameters ('type','message') MUST be set for watchdog
       if (isset($params[0]) && isset($params[1])) {
         call_user_func_array('watchdog', $params);
       }
