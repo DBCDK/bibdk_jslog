@@ -6,21 +6,23 @@
 
 /**
  * Handler for the form redirection error.
- * 
+ *
  * NOTICE this script overwrites misc/ajax.inc::Drupal.ajax.prototype.error
- * 
+ *
  */
-Drupal.ajax.prototype.error = function (response, uri) {
-    // this is what Drupal.ajax.prototype.error normally alerts:
-    // alert(Drupal.ajaxError(response, uri));
-  
-    alert(Drupal.t('An ajax error occurred. Please contact administrator if problem persists'));
-    // remove the spinner
-    if( this.progress.element ){
-        this.progress.element.remove();
-    } 
-    var variables = new Array();
-    Drupal.watchdog('ajax-error','an ajax error occurred', variables, Drupal.watchdog.ERROR, window.location.pathname);
+if ( Drupal.ajax ) {
+    Drupal.ajax.prototype.error = function (response, uri) {
+        // this is what Drupal.ajax.prototype.error normally alerts:
+        // alert(Drupal.ajaxError(response, uri));
+
+        alert(Drupal.t('An ajax error occurred. Please contact administrator if problem persists'));
+        // remove the spinner
+        if( this.progress.element ){
+            this.progress.element.remove();
+        }
+        var variables = new Array();
+        Drupal.watchdog('ajax-error','an ajax error occurred', variables, Drupal.watchdog.ERROR, window.location.pathname);
+    };
 };
 
 
@@ -40,14 +42,14 @@ Drupal.watchdog = function(type, message, variables, severity, link) {
             data['variables[' + i +']'] = variables[i];
         }
     }
- 
+
  // Some basic flood control to prevent drupal from bootstrapping if
- // not needed 
+ // not needed
   if (Drupal.settings.jslog_flood > 0) {
     jQuery.post(Drupal.settings.basePath + 'jslog', data);
   }
 
-  Drupal.settings.jslog_flood--;    
+  Drupal.settings.jslog_flood--;
 };
 
 // @see watchdog_severity_levels();
@@ -58,7 +60,7 @@ Drupal.watchdog.ERROR    = 3;
 Drupal.watchdog.WARNING  = 4;
 Drupal.watchdog.NOTICE   = 5;
 Drupal.watchdog.INFO     = 6;
-Drupal.watchdog.DEBUG    = 7; 
+Drupal.watchdog.DEBUG    = 7;
 
 
 
