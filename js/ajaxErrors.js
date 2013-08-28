@@ -14,8 +14,7 @@ if ( Drupal.ajax ) {
     Drupal.ajax.prototype.error = function (response, uri) {
         // this is what Drupal.ajax.prototype.error normally alerts:
         // alert(Drupal.ajaxError(response, uri));
-
-        alert(Drupal.t('An ajax error occurred. Please contact administrator if problem persists'));
+        //alert(Drupal.t('An ajax error occurred. Please contact administrator if problem persists'));
         // remove the spinner
         if( this.progress.element ){
             this.progress.element.remove();
